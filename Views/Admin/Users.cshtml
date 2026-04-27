@@ -1,0 +1,52 @@
+@* Views/Admin/Users.cshtml *@
+@model List<User>
+@{ ViewData["Title"] = "Manage Users"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold">👥 Manage Users</h4>
+    <a href="/Admin" class="btn btn-outline-secondary btn-sm">← Back</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td>@u.Username</td>
+                        <td>@u.FullName</td>
+                        <td><span class="badge bg-secondary">@(u.Role ?? "Student")</span></td>
+                        <td>
+                            @if (u.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            <form asp-action="ToggleUser" method="post" class="d-inline">
+                                <input type="hidden" name="userId" value="@u.Id" />
+                                <button class="btn btn-sm @(u.IsActive ? "btn-outline-danger" : "btn-outline-success")">
+                                    @(u.IsActive ? "Deactivate" : "Activate")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

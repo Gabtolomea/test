@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="text-center mt-5">
+    <div class="mb-4" style="font-size: 5rem;">⛔</div>
+    <h2 class="text-danger fw-bold">Access Denied</h2>
+    <p class="text-muted fs-5">You don't have permission to view that page.</p>
+
+    <div class="card mx-auto mt-4 shadow-sm" style="max-width: 420px;">
+        <div class="card-body">
+            <p class="mb-1">You are logged in as:</p>
+            <h5 class="fw-bold">@User.FindFirst("FullName")?.Value</h5>
+            <span class="badge bg-secondary fs-6">
+                @User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
+            </span>
+
+            <hr />
+
+            <p class="text-muted small">
+                Each role can only access their own dashboard.<br />
+                If you think this is a mistake, log out and try a different account.
+            </p>
+
+            <div class="d-grid gap-2">
+                <a href="/Home/Logout" class="btn btn-danger">🔓 Logout & Switch Account</a>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">← Go Back</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 text-muted small">
+        <strong>Role access guide:</strong><br />
+        Student → <code>/Student/Index</code> &nbsp;|&nbsp;
+        Instructor → <code>/Instructor/Index</code> &nbsp;|&nbsp;
+        Admin → <code>/Admin/Index</code>
+    </div>
+</div>

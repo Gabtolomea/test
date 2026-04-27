@@ -1,0 +1,151 @@
+@* Views/Student/Index.cshtml — Student Dashboard *@
+@model StudentDashboardViewModel
+@{ ViewData["Title"] = "My Clearance"; }
+
+<div class="row mb-4">
+    <div class="col">
+        <h3 class="fw-bold">📋 My Clearance Status</h3>
+        <p class="text-muted">
+            @Model.Student.FullName &nbsp;|&nbsp;
+            <strong>@Model.Student.StudentNumber</strong> &nbsp;|&nbsp;
+            @Model.Student.Status
+            @if (Model.ActivePeriod != null)
+            {
+                <span> &nbsp;|&nbsp; @Model.ActivePeriod.AcademicYear — @Model.ActivePeriod.Semester</span>
+            }
+        </p>
+    </div>
+</div>
+
+@* Overall progress bar *@
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-semibold">Overall Progress</span>
+            <span class="badge @(Model.IsFullyCleared ? "bg-success" : "bg-warning text-dark")">
+                @(Model.IsFullyCleared ? "✅ Fully Cleared" : "⏳ In Progress")
+            </span>
+        </div>
+        @{
+            int pct = Model.TotalCount > 0 ? (int)((double)Model.ClearedCount / Model.TotalCount * 100) : 0;
+        }
+        <div class="progress" style="height: 20px;">
+            <div class="progress-bar bg-success" style="width: @pct%">
+                @Model.ClearedCount / @Model.TotalCount cleared
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    @* Subject Clearances *@
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white fw-semibold">
+                📚 Subject Clearances
+            </div>
+            <div class="card-body p-0">
+                @if (!Model.SubjectClearances.Any())
+                {
+                    <p class="p-3 text-muted">No subject clearance records found for this period.</p>
+                }
+                else
+                {
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Subject</th>
+                                <th>Instructor</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var c in Model.SubjectClearances)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@c.SubjectCode</strong><br />
+                                        <small class="text-muted">@c.SubjectTitle</small>
+                                    </td>
+                                    <td>@c.InstructorName</td>
+                                    <td>
+                                        @{
+                                            string badge = c.Status == 2 ? "bg-success"
+                                                         : c.Status == 3 ? "bg-danger"
+                                                         : "bg-warning text-dark";
+                                        }
+                                        <span class="badge @badge">@c.StatusLabel</span>
+                                    </td>
+                                    <td><small>@(c.Remarks ?? "—")</small></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+
+        @* Organization Clearances *@
+        @if (Model.OrgClearances.Any())
+        {
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white fw-semibold">
+                    🏛️ Organization Clearances
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Organization</th>
+                                <th>Signatory</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var o in Model.OrgClearances)
+                            {
+                                <tr>
+                                    <td>@o.OrgName</td>
+                                    <td>@o.OrgSignatory</td>
+                                    <td>
+                                        @{
+                                            string obadge = o.Status == 2 ? "bg-success"
+                                                          : o.Status == 3 ? "bg-danger"
+                                                          : "bg-warning text-dark";
+                                        }
+                                        <span class="badge @obadge">@o.StatusLabel</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+
+    @* Announcements sidebar *@
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white fw-semibold">📢 Announcements</div>
+            <div class="list-group list-group-flush">
+                @if (!Model.Announcements.Any())
+                {
+                    <div class="list-group-item text-muted">No announcements yet.</div>
+                }
+                @foreach (var a in Model.Announcements)
+                {
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>@a.Title</strong>
+                            <small class="badge bg-secondary">@a.Type</small>
+                        </div>
+                        <p class="mb-1 text-muted small">@a.Content</p>
+                        <small class="text-muted">@a.CreatedAt.ToString("MMM d, yyyy")</small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

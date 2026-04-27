@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1a56db" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Clearance" />
+  <title>Online Clearance</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── RESET & BASE ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #1a56db;
+      --blue-dark:  #1245b5;
+      --blue-light: #ebf0ff;
+      --green:      #05a660;
+      --red:        #e53935;
+      --yellow:     #f59e0b;
+      --gray:       #6b7280;
+      --gray-light: #f3f4f6;
+      --white:      #ffffff;
+      --text:       #111827;
+      --text-soft:  #6b7280;
+      --radius:     16px;
+      --shadow:     0 4px 24px rgba(26,86,219,0.10);
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Nunito', sans-serif;
+      background: var(--gray-light);
+      color: var(--text);
+      -webkit-tap-highlight-color: transparent;
+      overflow: hidden;
+    }
+
+    /* ── APP SHELL ── */
+    #app {
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── SCREENS ── */
+    .screen {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+    .screen.active { display: flex; }
+
+    /* ── SCROLLABLE CONTENT AREA ── */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 80px;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      background: var(--blue);
+      color: var(--white);
+      padding: 16px 20px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      box-shadow: 0 2px 12px rgba(26,86,219,0.2);
+    }
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+    .topbar-sub {
+      font-size: 12px;
+      opacity: 0.75;
+      font-weight: 600;
+    }
+    .topbar-right { text-align: right; }
+    .btn-logout {
+      background: rgba(255,255,255,0.18);
+      border: none;
+      color: white;
+      border-radius: 10px;
+      padding: 6px 14px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* ── LOGIN SCREEN ── */
+    #screen-login {
+      background: linear-gradient(160deg, #1a56db 0%, #1245b5 50%, #0d3a9e 100%);
+      justify-content: center;
+      align-items: center;
+      padding: 32px 28px;
+    }
+
+    .login-logo {
+      font-size: 56px;
+      text-align: center;
+      margin-bottom: 8px;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+    .login-title {
+      text-align: center;
+      color: white;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+    .login-sub {
+      text-align: center;
+      color: rgba(255,255,255,0.65);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 36px;
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 24px;
+      padding: 28px 24px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    .form-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .form-input {
+      width: 100%;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--gray-light);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      margin-bottom: 16px;
+    }
+    .form-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(26,86,219,0.1);
+      background: white;
+    }
+    .btn-primary {
+      width: 100%;
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 15px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 16px rgba(26,86,219,0.35);
+      margin-top: 4px;
+    }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:disabled { opacity: 0.6; }
+
+    .error-msg {
+      background: #fff0f0;
+      border: 1.5px solid #fca5a5;
+      color: var(--red);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: none;
+    }
+    .error-msg.show { display: block; }
+
+    /* ── HERO CARD (Student/Instructor dashboard) ── */
+    .hero-card {
+      background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+      margin: 16px;
+      border-radius: 20px;
+      padding: 22px 20px;
+      color: white;
+      box-shadow: var(--shadow);
+    }
+    .hero-name {
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 2px;
+    }
+    .hero-sub {
+      font-size: 13px;
+      opacity: 0.75;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .hero-progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+    .hero-bar {
+      background: rgba(255,255,255,0.25);
+      border-radius: 99px;
+      height: 10px;
+      overflow: hidden;
+    }
+    .hero-bar-fill {
+      background: white;
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.8s cubic-bezier(.4,0,.2,1);
+    }
+    .hero-status {
+      margin-top: 14px;
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      border-radius: 99px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      padding: 16px 16px 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    /* ── CLEARANCE ITEM CARD ── */
+    .clearance-card {
+      margin: 0 16px 10px;
+      background: white;
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border: 1.5px solid #f0f0f0;
+    }
+    .clearance-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .icon-pending  { background: #fff8e6; }
+    .icon-cleared  { background: #e6f9f1; }
+    .icon-declined { background: #fff0f0; }
+
+    .clearance-info { flex: 1; min-width: 0; }
+    .clearance-title {
+      font-size: 15px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .clearance-sub {
+      font-size: 12px;
+      color: var(--text-soft);
+      font-weight: 600;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .clearance-remarks {
+      font-size: 11px;
+      color: var(--red);
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    /* ── STATUS BADGE ── */
+    .badge {
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .badge-pending  { background: #fff3cd; color: #92400e; }
+    .badge-cleared  { background: #d1fae5; color: #065f46; }
+    .badge-declined { background: #fee2e2; color: #991b1b; }
+
+    /* ── ANNOUNCEMENT CARD ── */
+    .ann-card {
+      margin: 0 16px 10px;
+      background: white;
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      border-left: 4px solid var(--blue);
+    }
+    .ann-card.urgent  { border-left-color: var(--red); }
+    .ann-card.event   { border-left-color: var(--green); }
+    .ann-card.reminder{ border-left-color: var(--yellow); }
+    .ann-title {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .ann-content {
+      font-size: 13px;
+      color: var(--text-soft);
+      font-weight: 600;
+      line-height: 1.5;
+    }
+    .ann-meta {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #9ca3af;
+      font-weight: 700;
+    }
+
+    /* ── STAT CARDS (Admin) ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 0 16px 16px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--blue);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-soft);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    /* ── STUDENT LIST ITEM (Admin/Instructor) ── */
+    .student-item {
+      margin: 0 16px 10px;
+      background: white;
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      border: 1.5px solid #f0f0f0;
+    }
+    .student-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .student-name {
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .student-num {
+      font-size: 12px;
+      color: var(--text-soft);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+    .mini-bar {
+      background: var(--gray-light);
+      border-radius: 99px;
+      height: 8px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .mini-bar-fill {
+      background: var(--green);
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.6s;
+    }
+    .mini-bar-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-soft);
+      margin-top: 4px;
+    }
+
+    /* ── ACTION BUTTONS (Instructor) ── */
+    .action-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .btn-clear {
+      flex: 1;
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-decline {
+      flex: 1;
+      background: var(--red);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* ── SUBJECT SELECTOR (Instructor) ── */
+    .subject-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 16px 10px;
+      background: white;
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      border: 1.5px solid #f0f0f0;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .subject-btn:active { border-color: var(--blue); }
+    .subject-btn-title { font-size: 15px; font-weight: 800; }
+    .subject-btn-code  { font-size: 12px; color: var(--text-soft); font-weight: 600; }
+    .subject-btn-arrow { font-size: 18px; color: var(--blue); }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      display: flex;
+      background: white;
+      border-top: 1.5px solid #f0f0f0;
+      padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+      flex-shrink: 0;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      padding: 4px 0;
+      transition: color 0.2s;
+      color: var(--text-soft);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      border: none;
+      background: none;
+      font-family: 'Nunito', sans-serif;
+    }
+    .nav-item.active { color: var(--blue); }
+    .nav-icon { font-size: 22px; line-height: 1; }
+
+    /* ── MODAL (Decline) ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-sheet {
+      background: white;
+      border-radius: 24px 24px 0 0;
+      padding: 24px 20px max(24px, env(safe-area-inset-bottom));
+      width: 100%;
+      max-width: 480px;
+      animation: slideUp 0.25s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 16px;
+    }
+    .modal-textarea {
+      width: 100%;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      resize: none;
+      outline: none;
+      margin-bottom: 14px;
+    }
+    .modal-textarea:focus { border-color: var(--blue); }
+    .modal-actions { display: flex; gap: 10px; }
+    .btn-secondary {
+      flex: 1;
+      background: var(--gray-light);
+      color: var(--text);
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* ── LOADING / EMPTY ── */
+    .loading {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-soft);
+      font-weight: 700;
+    }
+    .loading-spinner {
+      font-size: 36px;
+      animation: spin 1s linear infinite;
+      display: block;
+      margin-bottom: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-soft);
+    }
+    .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state-text { font-size: 15px; font-weight: 700; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1f2937;
+      color: white;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 200;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── BACK BUTTON ── */
+    .btn-back {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    /* ── PERIOD BADGE ── */
+    .period-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.18);
+      border-radius: 99px;
+      padding: 3px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 14px;
+    }
+
+    /* ── ADMIN ANNOUNCE FORM ── */
+    .form-card {
+      margin: 0 16px 16px;
+      background: white;
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+    .form-select {
+      width: 100%;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      outline: none;
+      background: var(--gray-light);
+    }
+    .form-select:focus { border-color: var(--blue); }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══════════════════════════════════════════════
+       LOGIN SCREEN
+  ══════════════════════════════════════════════ -->
+  <div id="screen-login" class="screen active">
+    <div class="login-logo">🎓</div>
+    <div class="login-title">Online Clearance</div>
+    <div class="login-sub">Sign in to your account</div>
+
+    <div class="login-card">
+      <div id="login-error" class="error-msg"></div>
+      <label class="form-label">Username</label>
+      <input id="inp-username" class="form-input" type="text"
+             placeholder="Enter username" autocomplete="username" />
+      <label class="form-label">Password</label>
+      <input id="inp-password" class="form-input" type="password"
+             placeholder="Enter password" autocomplete="current-password" />
+      <button class="btn-primary" id="btn-login" onclick="doLogin()">Sign In</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       STUDENT SCREEN
+  ══════════════════════════════════════════════ -->
+  <div id="screen-student" class="screen">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">My Clearance</div>
+        <div class="topbar-sub" id="s-period-label">Loading...</div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+
+    <div class="scroll-area" id="s-scroll">
+      <!-- Hero -->
+      <div class="hero-card" id="s-hero">
+        <div class="hero-name" id="s-name">—</div>
+        <div class="hero-sub" id="s-num">—</div>
+        <div class="hero-progress-label">
+          <span>Clearance Progress</span>
+          <span id="s-prog-text">0 / 0</span>
+        </div>
+        <div class="hero-bar">
+          <div class="hero-bar-fill" id="s-bar" style="width:0%"></div>
+        </div>
+        <div class="hero-status" id="s-status-badge">⏳ In Progress</div>
+      </div>
+
+      <!-- Subject Clearances -->
+      <div class="section-header">📚 Subject Clearances</div>
+      <div id="s-subjects"><div class="loading"><span class="loading-spinner">⏳</span>Loading...</div></div>
+
+      <!-- Org Clearances -->
+      <div class="section-header" id="s-org-header" style="display:none">🏛️ Organization</div>
+      <div id="s-orgs"></div>
+
+      <!-- Announcements -->
+      <div class="section-header">📢 Announcements</div>
+      <div id="s-announcements"><div class="loading"><span class="loading-spinner">⏳</span>Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       INSTRUCTOR SCREEN
+  ══════════════════════════════════════════════ -->
+  <div id="screen-instructor" class="screen">
+    <div class="topbar" id="i-topbar">
+      <div>
+        <div class="topbar-title" id="i-topbar-title">My Subjects</div>
+        <div class="topbar-sub" id="i-topbar-sub">Select a subject</div>
+      </div>
+      <button class="btn-logout" id="i-logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+
+    <div class="scroll-area" id="i-scroll">
+      <div class="section-header">Select Subject</div>
+      <div id="i-subjects"><div class="loading"><span class="loading-spinner">⏳</span>Loading...</div></div>
+
+      <!-- Students panel (shown after selecting a subject) -->
+      <div id="i-students-panel" style="display:none">
+        <div class="section-header" id="i-students-header">Students</div>
+        <div id="i-students-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       ADMIN SCREEN
+  ══════════════════════════════════════════════ -->
+  <div id="screen-admin" class="screen">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Admin Panel</div>
+        <div class="topbar-sub" id="a-period-label">Loading...</div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+
+    <div class="scroll-area" id="a-scroll">
+
+      <!-- Tab: Overview -->
+      <div id="a-tab-overview">
+        <div class="stats-row" id="a-stats">
+          <div class="stat-card"><div class="stat-num" id="a-total">—</div><div class="stat-label">Students</div></div>
+          <div class="stat-card"><div class="stat-num" id="a-cleared">—</div><div class="stat-label">Fully Cleared</div></div>
+        </div>
+        <div class="section-header">All Students</div>
+        <div id="a-students"><div class="loading"><span class="loading-spinner">⏳</span>Loading...</div></div>
+      </div>
+
+      <!-- Tab: Announcements -->
+      <div id="a-tab-announcements" style="display:none">
+        <div class="section-header">Post Announcement</div>
+        <div class="form-card">
+          <label class="form-label">Title</label>
+          <input id="a-ann-title" class="form-input" type="text" placeholder="Announcement title" />
+          <label class="form-label">Type</label>
+          <select id="a-ann-type" class="form-select">
+            <option value="General">General</option>
+            <option value="Urgent">Urgent</option>
+            <option value="Event">Event</option>
+            <option value="Reminder">Reminder</option>
+          </select>
+          <label class="form-label">Content</label>
+          <input id="a-ann-content" class="form-input" type="text" placeholder="Write your message..." />
+          <button class="btn-primary" onclick="postAnnouncement()" style="margin-top:4px">📤 Post</button>
+        </div>
+        <div class="section-header">Posted Announcements</div>
+        <div id="a-announcements"><div class="loading"><span class="loading-spinner">⏳</span>Loading...</div></div>
+      </div>
+
+      <!-- Tab: Users -->
+      <div id="a-tab-users" style="display:none">
+        <div class="section-header">All Users</div>
+        <div id="a-users"><div class="loading"><span class="loading-spinner">⏳</span>Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- Admin bottom nav -->
+    <div class="bottom-nav">
+      <button class="nav-item active" id="a-nav-overview" onclick="adminTab('overview')">
+        <span class="nav-icon">📊</span>Overview
+      </button>
+      <button class="nav-item" id="a-nav-announcements" onclick="adminTab('announcements')">
+        <span class="nav-icon">📢</span>Announce
+      </button>
+      <button class="nav-item" id="a-nav-users" onclick="adminTab('users')">
+        <span class="nav-icon">👥</span>Users
+      </button>
+    </div>
+  </div>
+
+</div><!-- #app -->
+
+<!-- Decline Modal -->
+<div class="modal-overlay" id="decline-modal">
+  <div class="modal-sheet">
+    <div class="modal-title">✖ Decline Clearance</div>
+    <textarea id="decline-remarks" class="modal-textarea" rows="3"
+              placeholder="Enter reason for declining..."></textarea>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeDeclineModal()">Cancel</button>
+      <button class="btn-decline" style="flex:1;border-radius:12px;padding:14px;font-size:14px"
+              onclick="confirmDecline()">Confirm Decline</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  CONFIG — change this to your actual backend URL
+// ══════════════════════════════════════════════════════
+const BASE = '';  // empty = same domain. If testing separately: 'http://localhost:5000'
+
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+let currentUser   = null;
+let currentRole   = null;
+let declineClearanceId = null;
+let selectedMisCode    = null;
+
+// ══════════════════════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+function showToast(msg, duration = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+function statusBadge(status) {
+  if (status === 2) return '<span class="badge badge-cleared">✔ Cleared</span>';
+  if (status === 3) return '<span class="badge badge-declined">✖ Declined</span>';
+  return '<span class="badge badge-pending">⏳ Pending</span>';
+}
+
+function statusIcon(status) {
+  if (status === 2) return { cls: 'icon-cleared',  ico: '✅' };
+  if (status === 3) return { cls: 'icon-declined', ico: '❌' };
+  return { cls: 'icon-pending', ico: '📋' };
+}
+
+async function apiFetch(url, opts = {}) {
+  const res = await fetch(BASE + url, {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json', ...opts.headers },
+    ...opts
+  });
+  return res;
+}
+
+// ══════════════════════════════════════════════════════
+//  LOGIN
+// ══════════════════════════════════════════════════════
+async function doLogin() {
+  const username = document.getElementById('inp-username').value.trim();
+  const password = document.getElementById('inp-password').value;
+  const errEl    = document.getElementById('login-error');
+  const btnEl    = document.getElementById('btn-login');
+
+  if (!username || !password) {
+    errEl.textContent = 'Please enter username and password.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  btnEl.disabled    = true;
+  btnEl.textContent = 'Signing in...';
+  errEl.classList.remove('show');
+
+  try {
+    // Post to ASP.NET login endpoint as form data
+    const form = new FormData();
+    form.append('Username', username);
+    form.append('Password', password);
+
+    const res = await fetch(BASE + '/Home/Login', {
+      method: 'POST',
+      credentials: 'include',
+      body: new URLSearchParams({ Username: username, Password: password })
+    });
+
+    const text = await res.text();
+    const url  = res.url;
+
+    // After login ASP.NET redirects to the dashboard
+    if (url.includes('/Student/'))         { currentRole = 'Student';    loadStudent(); }
+    else if (url.includes('/Instructor/')) { currentRole = 'Instructor'; loadInstructor(); }
+    else if (url.includes('/Admin/'))      { currentRole = 'Admin';      loadAdmin(); }
+    else if (text.includes('Invalid username') || text.includes('ErrorMessage')) {
+      // Parse error from returned HTML
+      const match = text.match(/alert-danger[^>]*>(.*?)<\/div>/s);
+      errEl.textContent = match ? match[1].trim() : 'Invalid username or password.';
+      errEl.classList.add('show');
+    } else {
+      // Try to detect from page content
+      if (text.includes('My Clearance') || text.includes('Student'))      { currentRole = 'Student';    loadStudent(); }
+      else if (text.includes('My Subjects') || text.includes('Instructor')){ currentRole = 'Instructor'; loadInstructor(); }
+      else if (text.includes('Admin'))                                      { currentRole = 'Admin';      loadAdmin(); }
+      else {
+        errEl.textContent = 'Login failed. Please try again.';
+        errEl.classList.add('show');
+      }
+    }
+  } catch (e) {
+    errEl.textContent = 'Cannot connect to server. Check your connection.';
+    errEl.classList.add('show');
+  } finally {
+    btnEl.disabled    = false;
+    btnEl.textContent = 'Sign In';
+  }
+}
+
+// Allow Enter key to submit login
+document.getElementById('inp-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+// ══════════════════════════════════════════════════════
+//  LOGOUT
+// ══════════════════════════════════════════════════════
+async function doLogout() {
+  await apiFetch('/Home/Logout');
+  currentUser = null;
+  currentRole = null;
+  document.getElementById('inp-username').value = '';
+  document.getElementById('inp-password').value = '';
+  showScreen('login');
+}
+
+// ══════════════════════════════════════════════════════
+//  STUDENT DASHBOARD
+// ══════════════════════════════════════════════════════
+async function loadStudent() {
+  showScreen('student');
+
+  try {
+    const res  = await apiFetch('/Student/Index');
+    const html = await res.text();
+    parseStudentPage(html);
+  } catch (e) {
+    document.getElementById('s-subjects').innerHTML =
+      '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Failed to load data</div></div>';
+  }
+}
+
+function parseStudentPage(html) {
+  const parser = new DOMParser();
+  const doc    = parser.parseFromString(html, 'text/html');
+
+  // ── Name & student number ──
+  const nameEl = doc.querySelector('h3.fw-bold');
+  const metaEl = doc.querySelector('p.text-muted');
+  if (metaEl) {
+    const parts = metaEl.textContent.split('|').map(s => s.trim());
+    document.getElementById('s-name').textContent = parts[0] || '—';
+    document.getElementById('s-num').textContent  = parts.slice(1, 3).join(' · ') || '—';
+    document.getElementById('s-period-label').textContent = parts[3] || '';
+  }
+
+  // ── Progress bar ──
+  const progText = doc.getElementById('s-prog-text') || doc.querySelector('[id="s-prog-text"]');
+  const barFill  = doc.querySelector('.progress-bar');
+  if (barFill) {
+    const w    = barFill.style.width || '0%';
+    const txt  = barFill.textContent.trim();
+    document.getElementById('s-bar').style.width      = w;
+    document.getElementById('s-prog-text').textContent = txt;
+    const pct  = parseInt(w);
+    const badge = document.getElementById('s-status-badge');
+    if (pct === 100) {
+      badge.textContent = '✅ Fully Cleared';
+      badge.style.background = 'rgba(5,166,96,0.25)';
+    } else {
+      badge.textContent = `⏳ ${txt} cleared`;
+    }
+  }
+
+  // ── Subject clearances ──
+  const rows = doc.querySelectorAll('table tbody tr');
+  const subEl = document.getElementById('s-subjects');
+  subEl.innerHTML = '';
+
+  if (rows.length === 0) {
+    subEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">No clearance records yet</div></div>';
+  } else {
+    rows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      if (cells.length < 3) return;
+      const subject  = cells[0].querySelector('strong')?.textContent.trim() || '';
+      const subTitle = cells[0].querySelector('small')?.textContent.trim() || '';
+      const instr    = cells[1].textContent.trim();
+      const badgeEl  = cells[2].querySelector('.badge');
+      const statusTx = badgeEl?.textContent.trim() || 'Pending';
+      const remarks  = cells[3]?.textContent.trim();
+      const status   = statusTx.includes('Clear') ? 2 : statusTx.includes('Declin') ? 3 : 1;
+      const ico      = statusIcon(status);
+
+      subEl.innerHTML += `
+        <div class="clearance-card">
+          <div class="clearance-icon ${ico.cls}">${ico.ico}</div>
+          <div class="clearance-info">
+            <div class="clearance-title">${subject} — ${subTitle}</div>
+            <div class="clearance-sub">👨‍🏫 ${instr}</div>
+            ${remarks && remarks !== '—' ? `<div class="clearance-remarks">💬 ${remarks}</div>` : ''}
+          </div>
+          ${statusBadge(status)}
+        </div>`;
+    });
+  }
+
+  // ── Announcements ──
+  const annCards = doc.querySelectorAll('.list-group-item');
+  const annEl    = document.getElementById('s-announcements');
+  annEl.innerHTML = '';
+
+  if (annCards.length === 0) {
+    annEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">No announcements</div></div>';
+  } else {
+    annCards.forEach(card => {
+      const title   = card.querySelector('strong')?.textContent.trim();
+      const type    = card.querySelector('.badge')?.textContent.trim().toLowerCase() || 'general';
+      const content = card.querySelector('p')?.textContent.trim();
+      const date    = card.querySelector('small')?.textContent.trim();
+      if (!title) return;
+      annEl.innerHTML += `
+        <div class="ann-card ${type}">
+          <div class="ann-title">${title}</div>
+          <div class="ann-content">${content || ''}</div>
+          <div class="ann-meta">${date || ''}</div>
+        </div>`;
+    });
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  INSTRUCTOR DASHBOARD
+// ══════════════════════════════════════════════════════
+async function loadInstructor() {
+  showScreen('instructor');
+  document.getElementById('i-subjects').innerHTML =
+    '<div class="loading"><span class="loading-spinner">⏳</span>Loading subjects...</div>';
+  document.getElementById('i-students-panel').style.display = 'none';
+
+  try {
+    const res  = await apiFetch('/Instructor/Index');
+    const html = await res.text();
+    parseInstructorSubjects(html);
+  } catch (e) {
+    document.getElementById('i-subjects').innerHTML =
+      '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Failed to load subjects</div></div>';
+  }
+}
+
+function parseInstructorSubjects(html) {
+  const parser = new DOMParser();
+  const doc    = parser.parseFromString(html, 'text/html');
+  const cards  = doc.querySelectorAll('.card');
+  const subEl  = document.getElementById('i-subjects');
+  subEl.innerHTML = '';
+
+  let found = false;
+  cards.forEach(card => {
+    const title     = card.querySelector('h5')?.textContent.trim();
+    const misText   = card.querySelector('p.text-muted')?.textContent.trim();
+    const misCode   = misText?.replace('MIS Code:', '').trim();
+    const link      = card.querySelector('a');
+    const href      = link?.getAttribute('href') || '';
+    const misFromHref = href.split('misCode=')[1];
+    const mis       = misFromHref || misCode;
+    const badges    = card.querySelectorAll('.badge');
+    const cleared   = badges[0]?.textContent.replace('Cleared','').trim() || '0';
+    const total     = badges[1]?.textContent.replace('Total','').trim() || '0';
+
+    if (!title || !mis) return;
+    found = true;
+
+    subEl.innerHTML += `
+      <div class="subject-btn" onclick="loadInstructorStudents('${mis}', '${title}')">
+        <div>
+          <div class="subject-btn-title">${title}</div>
+          <div class="subject-btn-code">MIS: ${mis} · ${cleared}/${total} cleared</div>
+        </div>
+        <div class="subject-btn-arrow">›</div>
+      </div>`;
+  });
+
+  if (!found) {
+    subEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">No subjects assigned</div></div>';
+  }
+}
+
+async function loadInstructorStudents(misCode, title) {
+  selectedMisCode = misCode;
+  document.getElementById('i-topbar-title').textContent = title;
+  document.getElementById('i-topbar-sub').textContent   = 'MIS: ' + misCode;
+  document.getElementById('i-students-header').textContent = '👩‍🎓 Students — ' + title;
+  document.getElementById('i-students-panel').style.display = 'block';
+  document.getElementById('i-students-list').innerHTML =
+    '<div class="loading"><span class="loading-spinner">⏳</span>Loading students...</div>';
+
+  // scroll to students section
+  setTimeout(() => {
+    document.getElementById('i-students-panel').scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+
+  try {
+    const res  = await apiFetch('/Instructor/Students?misCode=' + encodeURIComponent(misCode));
+    const html = await res.text();
+    parseInstructorStudents(html);
+  } catch (e) {
+    document.getElementById('i-students-list').innerHTML =
+      '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Failed to load students</div></div>';
+  }
+}
+
+function parseInstructorStudents(html) {
+  const parser = new DOMParser();
+  const doc    = parser.parseFromString(html, 'text/html');
+  const rows   = doc.querySelectorAll('table tbody tr');
+  const listEl = document.getElementById('i-students-list');
+  listEl.innerHTML = '';
+
+  if (rows.length === 0) {
+    listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">No students enrolled</div></div>';
+    return;
+  }
+
+  rows.forEach(row => {
+    const cells    = row.querySelectorAll('td');
+    if (cells.length < 4) return;
+    const studentNum = cells[0].textContent.trim();
+    const name       = cells[1].textContent.trim();
+    const badgeEl    = cells[2].querySelector('.badge');
+    const statusTx   = badgeEl?.textContent.trim() || 'Pending';
+    const status     = statusTx.includes('Clear') ? 2 : statusTx.includes('Declin') ? 3 : 1;
+
+    // Get clearance ID from the form
+    const form   = row.querySelector('form');
+    const idInp  = form?.querySelector('input[name="clearanceId"]');
+    const clearId = idInp?.value || '';
+
+    const actions = status !== 2 ? `
+      <div class="action-row">
+        <button class="btn-clear"    onclick="clearStudent(${clearId})">✔ Clear</button>
+        <button class="btn-decline"  onclick="openDeclineModal(${clearId})">✖ Decline</button>
+      </div>` : `<div style="color:var(--green);font-weight:800;font-size:13px;margin-top:8px">✅ Cleared</div>`;
+
+    listEl.innerHTML += `
+      <div class="student-item">
+        <div class="student-item-top">
+          <div>
+            <div class="student-name">${name}</div>
+            <div class="student-num">${studentNum}</div>
+          </div>
+          ${statusBadge(status)}
+        </div>
+        ${actions}
+      </div>`;
+  });
+}
+
+// ── Clear a student ──
+async function clearStudent(clearanceId) {
+  if (!clearanceId) { showToast('⚠️ Cannot find clearance record'); return; }
+  try {
+    const form = new URLSearchParams({
+      clearanceId: clearanceId,
+      status: 2,
+      remarks: ''
+    });
+    await fetch(BASE + '/Instructor/UpdateStatus', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: form
+    });
+    showToast('✅ Student cleared!');
+    loadInstructorStudents(selectedMisCode, document.getElementById('i-topbar-title').textContent);
+  } catch (e) {
+    showToast('❌ Failed to update');
+  }
+}
+
+// ── Decline modal ──
+function openDeclineModal(clearanceId) {
+  declineClearanceId = clearanceId;
+  document.getElementById('decline-remarks').value = '';
+  document.getElementById('decline-modal').classList.add('show');
+}
+function closeDeclineModal() {
+  document.getElementById('decline-modal').classList.remove('show');
+}
+async function confirmDecline() {
+  const remarks = document.getElementById('decline-remarks').value.trim();
+  if (!remarks) { showToast('Please enter a reason'); return; }
+  closeDeclineModal();
+  try {
+    const form = new URLSearchParams({
+      clearanceId: declineClearanceId,
+      status: 3,
+      remarks: remarks
+    });
+    await fetch(BASE + '/Instructor/UpdateStatus', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: form
+    });
+    showToast('✖ Clearance declined');
+    loadInstructorStudents(selectedMisCode, document.getElementById('i-topbar-title').textContent);
+  } catch (e) {
+    showToast('❌ Failed to update');
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  ADMIN DASHBOARD
+// ══════════════════════════════════════════════════════
+let adminCurrentTab = 'overview';
+
+async function loadAdmin() {
+  showScreen('admin');
+  adminTab('overview');
+}
+
+function adminTab(tab) {
+  // Hide all tabs
+  ['overview','announcements','users'].forEach(t => {
+    document.getElementById('a-tab-' + t).style.display = 'none';
+    document.getElementById('a-nav-' + t).classList.remove('active');
+  });
+  document.getElementById('a-tab-' + tab).style.display = 'block';
+  document.getElementById('a-nav-' + tab).classList.add('active');
+  adminCurrentTab = tab;
+
+  if (tab === 'overview')       loadAdminOverview();
+  if (tab === 'announcements')  loadAdminAnnouncements();
+  if (tab === 'users')          loadAdminUsers();
+}
+
+async function loadAdminOverview() {
+  document.getElementById('a-students').innerHTML =
+    '<div class="loading"><span class="loading-spinner">⏳</span>Loading...</div>';
+  try {
+    const res  = await apiFetch('/Admin/Index');
+    const html = await res.text();
+    parseAdminOverview(html);
+  } catch(e) {
+    document.getElementById('a-students').innerHTML =
+      '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Failed to load</div></div>';
+  }
+}
+
+function parseAdminOverview(html) {
+  const parser = new DOMParser();
+  const doc    = parser.parseFromString(html, 'text/html');
+  const rows   = doc.querySelectorAll('table tbody tr');
+  const listEl = document.getElementById('a-students');
+  listEl.innerHTML = '';
+
+  let totalCount = 0, clearedCount = 0;
+
+  rows.forEach(row => {
+    const cells   = row.querySelectorAll('td');
+    if (cells.length < 5) return;
+    const sNum    = cells[0].textContent.trim();
+    const name    = cells[1].textContent.trim();
+    const type    = cells[2].textContent.trim();
+    const barEl   = cells[3].querySelector('.progress-bar');
+    const barW    = barEl?.style.width || '0%';
+    const barTxt  = barEl?.textContent.trim() || '0/0';
+    const badgeEl = cells[4].querySelector('.badge');
+    const isCleared = badgeEl?.textContent.includes('Cleared');
+    totalCount++;
+    if (isCleared) clearedCount++;
+
+    const pct = parseInt(barW) || 0;
+    listEl.innerHTML += `
+      <div class="student-item">
+        <div class="student-item-top">
+          <div>
+            <div class="student-name">${name}</div>
+            <div class="student-num">${sNum} · ${type}</div>
+          </div>
+          ${isCleared
+            ? '<span class="badge badge-cleared">✅ Cleared</span>'
+            : '<span class="badge badge-pending">⏳ Pending</span>'}
+        </div>
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:${pct}%"></div></div>
+        <div class="mini-bar-label">${barTxt} subjects cleared</div>
+      </div>`;
+  });
+
+  document.getElementById('a-total').textContent   = totalCount;
+  document.getElementById('a-cleared').textContent = clearedCount;
+
+  // period label
+  const periodEl = doc.querySelector('.topbar-sub, p.text-muted');
+  if (periodEl) document.getElementById('a-period-label').textContent = periodEl.textContent.trim();
+
+  if (rows.length === 0) {
+    listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">No students yet</div></div>';
+  }
+}
+
+async function loadAdminAnnouncements() {
+  document.getElementById('a-announcements').innerHTML =
+    '<div class="loading"><span class="loading-spinner">⏳</span>Loading...</div>';
+  try {
+    const res  = await apiFetch('/Admin/Announcements');
+    const html = await res.text();
+    parseAdminAnnouncements(html);
+  } catch(e) {
+    document.getElementById('a-announcements').innerHTML =
+      '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Failed to load</div></div>';
+  }
+}
+
+function parseAdminAnnouncements(html) {
+  const parser  = new DOMParser();
+  const doc     = parser.parseFromString(html, 'text/html');
+  const rows    = doc.querySelectorAll('table tbody tr');
+  const listEl  = document.getElementById('a-announcements');
+  listEl.innerHTML = '';
+
+  if (rows.length === 0) {
+    listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">No announcements yet</div></div>';
+    return;
+  }
+
+  rows.forEach(row => {
+    const cells   = row.querySelectorAll('td');
+    if (cells.length < 4) return;
+    const title   = cells[0].textContent.trim();
+    const type    = cells[1].textContent.trim().toLowerCase();
+    const content = cells[2].textContent.trim();
+    const date    = cells[3].textContent.trim();
+    const form    = row.querySelector('form');
+    const idInp   = form?.querySelector('input[name="id"]');
+    const annId   = idInp?.value;
+
+    listEl.innerHTML += `
+      <div class="ann-card ${type}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="ann-title">${title}</div>
+          ${annId ? `<button onclick="deleteAnnouncement(${annId})" style="background:none;border:none;font-size:18px;cursor:pointer;color:#9ca3af">🗑</button>` : ''}
+        </div>
+        <div class="ann-content">${content}</div>
+        <div class="ann-meta">${date}</div>
+      </div>`;
+  });
+}
+
+async function postAnnouncement() {
+  const title   = document.getElementById('a-ann-title').value.trim();
+  const content = document.getElementById('a-ann-content').value.trim();
+  const type    = document.getElementById('a-ann-type').value;
+  if (!title || !content) { showToast('Please fill in all fields'); return; }
+
+  try {
+    await fetch(BASE + '/Admin/AddAnnouncement', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ title, content, type })
+    });
+    document.getElementById('a-ann-title').value   = '';
+    document.getElementById('a-ann-content').value = '';
+    showToast('📢 Announcement posted!');
+    loadAdminAnnouncements();
+  } catch(e) {
+    showToast('❌ Failed to post announcement');
+  }
+}
+
+async function deleteAnnouncement(id) {
+  if (!confirm('Delete this announcement?')) return;
+  try {
+    await fetch(BASE + '/Admin/DeleteAnnouncement', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ id })
+    });
+    showToast('🗑 Deleted');
+    loadAdminAnnouncements();
+  } catch(e) {
+    showToast('❌ Failed to delete');
+  }
+}
+
+async function loadAdminUsers() {
+  document.getElementById('a-users').innerHTML =
+    '<div class="loading"><span class="loading-spinner">⏳</span>Loading...</div>';
+  try {
+    const res  = await apiFetch('/Admin/Users');
+    const html = await res.text();
+    parseAdminUsers(html);
+  } catch(e) {
+    document.getElementById('a-users').innerHTML =
+      '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Failed to load</div></div>';
+  }
+}
+
+function parseAdminUsers(html) {
+  const parser = new DOMParser();
+  const doc    = parser.parseFromString(html, 'text/html');
+  const rows   = doc.querySelectorAll('table tbody tr');
+  const listEl = document.getElementById('a-users');
+  listEl.innerHTML = '';
+
+  rows.forEach(row => {
+    const cells    = row.querySelectorAll('td');
+    if (cells.length < 4) return;
+    const username = cells[0].textContent.trim();
+    const fullname = cells[1].textContent.trim();
+    const role     = cells[2].textContent.trim();
+    const isActive = cells[3].textContent.includes('Active') && !cells[3].textContent.includes('Inactive');
+    const form     = row.querySelector('form');
+    const idInp    = form?.querySelector('input[name="userId"]');
+    const uid      = idInp?.value;
+
+    listEl.innerHTML += `
+      <div class="student-item">
+        <div class="student-item-top">
+          <div>
+            <div class="student-name">${fullname}</div>
+            <div class="student-num">@${username} · ${role}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+            <span class="badge ${isActive ? 'badge-cleared' : 'badge-declined'}">
+              ${isActive ? '🟢 Active' : '🔴 Inactive'}
+            </span>
+            ${uid ? `<button onclick="toggleUser(${uid})"
+              style="background:${isActive ? '#fee2e2' : '#d1fae5'};
+                     color:${isActive ? '#991b1b' : '#065f46'};
+                     border:none;border-radius:8px;padding:4px 12px;
+                     font-family:Nunito,sans-serif;font-weight:800;font-size:12px;cursor:pointer">
+              ${isActive ? 'Deactivate' : 'Activate'}
+            </button>` : ''}
+          </div>
+        </div>
+      </div>`;
+  });
+
+  if (rows.length === 0) {
+    listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">No users found</div></div>';
+  }
+}
+
+async function toggleUser(userId) {
+  try {
+    await fetch(BASE + '/Admin/ToggleUser', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ userId })
+    });
+    showToast('✅ User status updated');
+    loadAdminUsers();
+  } catch(e) {
+    showToast('❌ Failed to update');
+  }
+}
+
+// Close decline modal when tapping backdrop
+document.getElementById('decline-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeDeclineModal();
+});
+</script>
+</body>
+</html>

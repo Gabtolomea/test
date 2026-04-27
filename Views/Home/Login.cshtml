@@ -1,0 +1,67 @@
+@* Views/Home/Login.cshtml *@
+@model LoginViewModel
+@{ 
+    Layout = null;  // No navbar on login page
+    ViewData["Title"] = "Login";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login - Online Clearance</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body class="bg-light">
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-4">
+
+            <div class="text-center mb-4">
+                <h2 class="fw-bold text-primary">🎓 Online Clearance</h2>
+                <p class="text-muted">Please log in to continue</p>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+
+                    @* asp-action="Login" posts to HomeController.Login(POST) *@
+                    <form asp-action="Login" method="post">
+
+                        @* Show error message if login failed *@
+                        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                        {
+                            <div class="alert alert-danger">@Model.ErrorMessage</div>
+                        }
+
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input asp-for="Username" class="form-control" placeholder="Enter username" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Enter password" required />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+
+                    <hr />
+                    <small class="text-muted d-block text-center">
+                        Demo accounts: <strong>jdoe / pass123</strong> (Student) &nbsp;|&nbsp;
+                        <strong>asmith / prof456</strong> (Instructor) &nbsp;|&nbsp;
+                        <strong>Admin / Admin123</strong>
+                    </small>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
